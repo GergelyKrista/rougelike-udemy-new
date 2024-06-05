@@ -6,9 +6,9 @@ using UnityEditor;
 
 public class RoomNodeSO : ScriptableObject
 {
-    public string id;
-    public List<string> parentRoomNodeIDList = new List<string>();
-    public List<string> childRoomNodeIDList = new List<string>();
+    [HideInInspector]public string id;
+    [HideInInspector]public List<string> parentRoomNodeIDList = new List<string>();
+    [HideInInspector]public List<string> childRoomNodeIDList = new List<string>();
     [HideInInspector] public RoomNodeGraphSO roomNodeGraph;
     public RoomNodeTypeSO roomNodeType;
     [HideInInspector] public RoomNodeTypeListSO roomNodeTypeList;
@@ -44,12 +44,23 @@ public class RoomNodeSO : ScriptableObject
         
         EditorGUI.BeginChangeCheck();
         
-        int selected = roomNodeTypeList.list.FindIndex(x => x == roomNodeType);
-        
-        int selection = EditorGUILayout.Popup("", selected, GetRoomTypesToDisplay());
-        
-        roomNodeType = roomNodeTypeList.list[selection];
-        
+        //if room node has a parent or is of type entrance than display a label else display a popup
+        if (parentRoomNodeIDList.Count > 0 || roomNodeType.isEntrance)
+        {
+            // Display label that can't be changed
+            EditorGUILayout.LabelField(roomNodeType.roomNodeTypeName);
+        }
+        else
+        {
+
+            int selected = roomNodeTypeList.list.FindIndex(x => x == roomNodeType);
+
+            int selection = EditorGUILayout.Popup("", selected, GetRoomTypesToDisplay());
+
+            roomNodeType = roomNodeTypeList.list[selection];
+
+        }
+
         if (EditorGUI.EndChangeCheck())
             EditorUtility.SetDirty(this);
         
